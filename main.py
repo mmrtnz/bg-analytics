@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from api import search, lookUpGameById
+from chord import Chord
 
 class BoardGame:
     def __init__(self, id, name, mechanics=[]):
@@ -22,13 +23,13 @@ myBoardGames = [
     BoardGame(172225, 'Exploding Kittens', ['Hand Management', 'Hot Potato', 'Player Elimination', 'Push Your Luck', 'Set Collection', 'Take That']),
     BoardGame(1198, 'Set', ['Pattern Recognition', 'Set Collection']),
     BoardGame(9220, 'Saboteur', ['Hand Management', 'Map Addition', 'Network and Route Building', 'Take That', 'Team-Based Game', 'Traitor Game']),
-    BoardGame(178900, 'Codenames', ['Communication Limits', 'Memory', 'Push Your Luck', 'Team-Based Game']),
-    BoardGame(230802, 'Azul', ['Drafting', 'End Game Bonuses', 'Pattern Building', 'Set Collection', 'Tile Placement', 'Turn Order: Claim Action']),
-    BoardGame(46213, 'Telestrations', ['Paper-and-Pencil']),
-    BoardGame(13, 'The Settlers of Catan', ['Dice Rolling', 'Hexagon Grid', 'Income', 'Modular Board', 'Network and Route Building', 'Race', 'Random Production', 'Trading', 'Variable Setup']),
-    BoardGame(167791, 'Terraforming Mars', ['Card Drafting', 'End Game Bonuses', 'Hand Management', 'Hexagon Grid', 'Income', 'Set Collection', 'Solo / Solitaire Game', 'Take That', 'Tile Placement', 'Turn Order: Progressive', 'Variable Player Powers']),
-    BoardGame(113924, 'Zombicide', ['Action Points', 'Cooperative Game', 'Dice Rolling', 'Grid Movement', 'Hand Management', 'Modular Board', 'Player Elimination', 'Scenario / Mission / Campaign Game', 'Variable Player Powers']),
-    BoardGame(110327, 'Lords of Waterdeep', ['Card Drafting', 'Contracts', 'Hidden Roles', 'Increase Value of Unchosen Resources', 'Ownership', 'Set Collection', 'Take That', 'Turn Order: Claim Action', 'Worker Placement']),
+    # BoardGame(178900, 'Codenames', ['Communication Limits', 'Memory', 'Push Your Luck', 'Team-Based Game']),
+    # BoardGame(230802, 'Azul', ['Drafting', 'End Game Bonuses', 'Pattern Building', 'Set Collection', 'Tile Placement', 'Turn Order: Claim Action']),
+    # BoardGame(46213, 'Telestrations', ['Paper-and-Pencil']),
+    # BoardGame(13, 'The Settlers of Catan', ['Dice Rolling', 'Hexagon Grid', 'Income', 'Modular Board', 'Network and Route Building', 'Race', 'Random Production', 'Trading', 'Variable Setup']),
+    # BoardGame(167791, 'Terraforming Mars', ['Card Drafting', 'End Game Bonuses', 'Hand Management', 'Hexagon Grid', 'Income', 'Set Collection', 'Solo / Solitaire Game', 'Take That', 'Tile Placement', 'Turn Order: Progressive', 'Variable Player Powers']),
+    # BoardGame(113924, 'Zombicide', ['Action Points', 'Cooperative Game', 'Dice Rolling', 'Grid Movement', 'Hand Management', 'Modular Board', 'Player Elimination', 'Scenario / Mission / Campaign Game', 'Variable Player Powers']),
+    # BoardGame(110327, 'Lords of Waterdeep', ['Card Drafting', 'Contracts', 'Hidden Roles', 'Increase Value of Unchosen Resources', 'Ownership', 'Set Collection', 'Take That', 'Turn Order: Claim Action', 'Worker Placement']),
 ]
 
 # Get mechanics for each board game
@@ -39,5 +40,27 @@ myBoardGames = [
 #         if data['hasError'] == False:
 #             game.mechanics = data['mechanics']
 
-for g in myBoardGames:
-    print(str(g))
+uniqueMechanics = set()
+for game in myBoardGames:
+    for m in game.mechanics:
+        uniqueMechanics.add(m)
+
+# Alphabetize and cast to make uniqueMechanics orderd
+uniqueMechanics = list(sorted(uniqueMechanics))
+n = len(uniqueMechanics)
+
+# Create an empty square 2D array of zeros
+# A more readable approach would have been [[0] * n] * n, but that copies the same reference
+matrix = [[0 for j in range(n)] for i in range(n)]
+
+# Count every pairing
+for game in myBoardGames:
+    mechanics = game.mechanics
+    for mechanicA in mechanics:
+        for mechanicB in mechanics:
+            i = uniqueMechanics.index(mechanicA)
+            j = uniqueMechanics.index(mechanicB)
+            if i != j:
+                matrix[i][j] += 1
+
+Chord(matrix, uniqueMechanics).to_html()
